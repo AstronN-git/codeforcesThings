@@ -1,6 +1,8 @@
 #if (${PACKAGE_NAME} && ${PACKAGE_NAME} != "")package ${PACKAGE_NAME};#end
 
 /*
+    template: https://github.com/AstronN-git/codeforcesThings/blob/main/gitFiles/javaTemplate.java
+
     author: _Astron
     for codeforces
     file creation date: ${DATE}-${HOUR}:${MINUTE}:${SECOND}
@@ -24,9 +26,6 @@ public class ${NAME} {
     public void solution() {
         CustomScanner in = new CustomScanner();
         out = new PrintWriter(new BufferedOutputStream(System.out));
-
-
-
 
 
         out.close();
