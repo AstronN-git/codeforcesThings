@@ -5,17 +5,18 @@
     file creation date: ${DATE}-${HOUR}:${MINUTE}:${SECOND}
 */
 
-import java.io.*
 import java.util.*
+import java.io.*
 
 fun main() {
-    solve()
+    val input = Input()
+    solve(input)
 }
 
 val output = PrintWriter(BufferedOutputStream(System.out))
 
-fun solve() {
-    val input = Input()
+fun solve(input : Input) {
+    
 }
 
 class Input {
@@ -30,6 +31,4 @@ class Input {
     fun nextInt() : Int = next().toInt()
     fun nextLong() : Long = next().toLong()
     fun nextLine() : String = br.readLine() ?: ""
-
 }
-
