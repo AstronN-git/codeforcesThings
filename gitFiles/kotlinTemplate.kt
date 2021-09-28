@@ -11,6 +11,7 @@ import java.io.*
 fun main() {
     val input = Input()
     solve(input)
+    output.flush()
 }
 
 val output = PrintWriter(BufferedOutputStream(System.out))
