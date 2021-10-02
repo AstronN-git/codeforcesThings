@@ -23,8 +23,8 @@ fun solve() {
 fun _println(a : Any) = output.println(a)
 fun _iprintln(a : Any) {output.println(a); output.flush()}
 
-fun _readint() : Int = input.nextInt()
-fun _readlong() : Long = input.nextLong()
+fun _nextint() : Int = input.nextInt()
+fun _nextlong() : Long = input.nextLong()
 fun _nextline() : String = input.nextLine()
 fun _nextstring() : String = input.next()
 
