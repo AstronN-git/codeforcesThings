@@ -13,14 +13,16 @@ fun main() {
     output.flush()
 }
 
+fun solve() {
+  
+}
+
 val output = PrintWriter(BufferedOutputStream(System.out))
 val input = Input()
 
-fun solve() {
-    
-}
-
 fun _println(a : Any) = output.println(a)
+fun _println() = output.println()
+fun _print(a : Any) = output.print(a)
 fun _iprintln(a : Any) {output.println(a); output.flush()}
 
 fun _nextint() : Int = input.nextInt()
