@@ -7,6 +7,7 @@
 
 import java.util.*
 import java.io.*
+import kotlin.math.*
 
 fun main() {
     solve()
@@ -14,7 +15,7 @@ fun main() {
 }
 
 fun solve() {
-  
+
 }
 
 val output = PrintWriter(BufferedOutputStream(System.out))
@@ -29,6 +30,10 @@ fun _nextint() : Int = input.nextInt()
 fun _nextlong() : Long = input.nextLong()
 fun _nextline() : String = input.nextLine()
 fun _nextstring() : String = input.next()
+
+fun _nextints() : ArrayList<Int> = ArrayList(_nextline().split(" ").map {it -> it.toInt()})
+fun _nextlongs() : ArrayList<Long> = ArrayList(_nextline().split(" ").map {it -> it.toLong()})
+fun _nextstrings() : ArrayList<String> = ArrayList(_nextline().split(" "))
 
 class Input {
     private val br = BufferedReader(InputStreamReader(System.`in`))
