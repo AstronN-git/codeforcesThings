@@ -10,10 +10,9 @@ import java.io.*
 import kotlin.collections.HashMap
 import kotlin.math.*
 
-const val DEBUG = true
+const val DEBUG = false
 
-var output : PrintWriter = PrintWriter(BufferedOutputStream(System.out))
-
+@kotlin.ExperimentalStdlibApi
 fun main() {
     if (DEBUG) output = PrintWriter(BufferedOutputStream(FileOutputStream("out.log")))
 
@@ -21,11 +20,13 @@ fun main() {
     output.flush()
 }
 
+@kotlin.ExperimentalStdlibApi
 fun solve() {
     
 }
 
 val input = Input(DEBUG)
+var output : PrintWriter = PrintWriter(BufferedOutputStream(System.out))
 
 fun _println(a : Any) = output.println(a)
 fun _println() = output.println()
@@ -40,12 +41,13 @@ fun _nextstring() : String = input.next()
 fun IntArray.read() : IntArray {for (i in this.indices) this[i] = _nextint(); return this}
 fun LongArray.read() : LongArray {for (i in this.indices) this[i] = _nextlong(); return this}
 
+fun Array<IntArray>.read() : Array<IntArray> {for (i in this.indices) {for (j in this[i].indices) this[i][j] = _nextint()}; return this}
+
 fun _nextints() : ArrayList<Int> = ArrayList(_nextline().split(" ").map {it -> it.toInt()})
 fun _nextlongs() : ArrayList<Long> = ArrayList(_nextline().split(" ").map {it -> it.toLong()})
 fun _nextstrings() : ArrayList<String> = ArrayList(_nextline().split(" "))
 
 class Input (DEBUG : Boolean) {
-
     private val br = if (DEBUG) BufferedReader(InputStreamReader(FileInputStream("in.log"))) else BufferedReader(InputStreamReader(System.`in`))
     private var st : StringTokenizer = StringTokenizer("")
 
