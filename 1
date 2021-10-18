@@ -1,0 +1,95 @@
+import java.util.*
+import java.io.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.math.*
+
+const val FILE_IN_OUT = false
+const val FILE_IN = "in.log"
+const val FILE_OUT = "out.log"
+
+@kotlin.ExperimentalStdlibApi
+fun main() {
+    solve()
+    output.flush()
+}
+
+@kotlin.ExperimentalStdlibApi
+fun solve() {
+    val n = _nextint()
+    val arr = IntArray(n).read() + IntArray(gn2p(n) - n)
+    val tree = IntArray(gn2p(n) * 2)
+
+    fun build (lx : Int, rx : Int, v : Int) {
+        if (rx-lx == 1) tree[v] = arr[lx]
+        else {
+            val m = lx + (rx-lx)/2
+            build (lx, m, v*2)
+            build (m, rx, v*2+1)
+
+            tree[v] = min ( tree[v*2] , tree[v*2+1] )
+        }
+    }
+
+    fun set (lx : Int, rx : Int, v : Int, x : Int, point : Int) {
+        if (rx-lx==1) tree[v] = x
+        else {
+            val m = lx + (rx-lx)/2
+            if (point < m) set (lx, m, v*2, x, point)
+            else set (m, rx, v*2+1, x, point)
+
+            tree[v] = min (tree[v*2], tree[v*2+1])
+        }
+    }
+
+    fun set (point : Int, x : Int) = set(0, arr.size, 1, x, point)
+
+    fun get (l : Int, r : Int, lx : Int, rx : Int, v : Int) : Int {
+        if (l >= rx || r <= lx) return Int.MAX_VALUE
+        if (l <= lx && r >= rx) return tree[v]
+
+        val m = lx + (rx-lx)/2
+        return min (get (l, m, lx, rx, v*2), get (m, r, lx, rx, v*2+1))
+    }
+
+    fun get (l : Int, r : Int) = get (0, arr.size, l, r, 1)
+
+    build (0, arr.size, 1)
+
+    val m = _nextint()
+    for (i in 0 until m) {
+        _println(get (_nextint(), _nextint()))
+    }
+}
+
+fun gn2p (n : Int) : Int {
+    for (i in 1 until n) {
+        if (2.0.pow(i) >= n && 2.0.pow(i-1) < n) return i
+    }
+
+    return -1
+}
+
+var output : PrintWriter = PrintWriter(BufferedOutputStream(if (FILE_IN_OUT) FileOutputStream(FILE_OUT) else System.out))
+
+fun _println(a : Any) = output.println(a)
+fun _println() = output.println()
+fun _print(a : Any) = output.print(a)
+fun _iprintln(a : Any) {output.println(a); output.flush()}
+
+fun _nextint() : Int = _nextstring().toInt()
+fun _nextlong() : Long = _nextstring().toLong()
+fun _nextline() : String = br.readLine() ?: ""
+fun _nextstring() : String { while (st.hasMoreElements().not()) st = StringTokenizer(br.readLine() ?: return "", " "); return st.nextToken() }
+
+fun IntArray.read() : IntArray {for (i in this.indices) this[i] = _nextint(); return this}
+fun LongArray.read() : LongArray {for (i in this.indices) this[i] = _nextlong(); return this}
+
+fun Array<IntArray>.read() : Array<IntArray> {for (i in this.indices) {for (j in this[i].indices) this[i][j] = _nextint()}; return this}
+
+fun _nextints() : ArrayList<Int> = ArrayList(_nextline().split(" ").map {it -> it.toInt()})
+fun _nextlongs() : ArrayList<Long> = ArrayList(_nextline().split(" ").map {it -> it.toLong()})
+fun _nextstrings() : ArrayList<String> = ArrayList(_nextline().split(" "))
+
+val br = BufferedReader(InputStreamReader(if (FILE_IN_OUT) FileInputStream(FILE_IN) else System.`in`))
+var st = StringTokenizer("")
