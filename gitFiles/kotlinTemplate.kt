@@ -13,7 +13,7 @@ const val TESTS = true
 fun main() {
     if (TESTS) {
         presolve()
-        var t = _nextint()
+        var t = ni()
         while (t-- > 0) solve()
     } else
         solve()
@@ -30,28 +30,31 @@ fun solve() {
     
 }
 
-var output : PrintWriter = PrintWriter(BufferedOutputStream(if (FILE_IN_OUT) FileOutputStream(FILE_OUT) else System.out))
+val Int.l
+    get() = this.toLong()
 
-fun _println(a : Any) = output.println(a)
-fun _println() = output.println()
-fun _print(a : Any) = output.print(a)
-fun _iprintln(a : Any) {output.println(a); output.flush()}
+var output = PrintWriter(BufferedOutputStream(if (FILE_IN_OUT) FileOutputStream(FILE_OUT) else System.out))
 
-fun _nextint() : Int = _nextstring().toInt()
-fun _nextlong() : Long = _nextstring().toLong()
-fun _nextline() : String = br.readLine() ?: ""
-fun _nextstring() : String { while (st.hasMoreElements().not()) st = StringTokenizer(br.readLine() ?: return "", " "); return st.nextToken() }
-fun IntArray.read() : IntArray {for (i in indices) this[i] = _nextint(); return this}
-fun LongArray.read() : LongArray {for (i in indices) this[i] = _nextlong(); return this}
-fun Array<String>.read() : Array<String> {for (i in indices) this[i] = _nextstring(); return this}
+fun pln(a : Any) = output.println(a)
+fun pln() = output.println()
+fun pr(a : Any) = output.print(a)
+fun ipln(a : Any) {output.println(a); output.flush()}
 
-fun Array<IntArray>.read() : Array<IntArray> {for (i in indices) for (j in this[i].indices) this[i][j] = _nextint(); return this}
+fun ni() = nstr().toInt()
+fun nl() = nstr().toLong()
+fun nln() = br.readLine() ?: ""
+fun nstr() : String { while (st.hasMoreElements().not()) st = StringTokenizer(br.readLine() ?: return "", " "); return st.nextToken() }
+fun IntArray.read() : IntArray {for (i in indices) this[i] = ni(); return this}
+fun LongArray.read() : LongArray {for (i in indices) this[i] = nl(); return this}
+fun Array<String>.read() : Array<String> {for (i in indices) this[i] = nstr(); return this}
 
-fun IntArray.arrToArr() : Array<Int> {val res = Array<Int>(size) {0}; for (i in indices) res[i] = this[i]; return res}
+fun Array<IntArray>.read() : Array<IntArray> {for (i in indices) for (j in this[i].indices) this[i][j] = ni(); return this}
 
-fun _nextints() : ArrayList<Int> = ArrayList(_nextline().split(" ").map {it.toInt()})
-fun _nextlongs() : ArrayList<Long> = ArrayList(_nextline().split(" ").map {it.toLong()})
-fun _nextstrings() : ArrayList<String> = ArrayList(_nextline().split(" "))
+fun IntArray.arrToArr() : Array<Int> {val res = Array(size) {0}; for (i in indices) res[i] = this[i]; return res}
+
+fun nis() = ArrayList(nln().split(" ").map {it.toInt()})
+fun nls() = ArrayList(nln().split(" ").map {it.toLong()})
+fun nstrs() = ArrayList(nln().split(" "))
 
 val br = BufferedReader(InputStreamReader(if (FILE_IN_OUT) FileInputStream(FILE_IN) else System.`in`))
 var st = StringTokenizer("")
