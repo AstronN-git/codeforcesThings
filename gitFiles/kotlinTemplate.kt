@@ -13,8 +13,7 @@ const val TESTS = true
 fun main() {
     if (TESTS) {
         presolve()
-        var t = ni()
-        while (t-- > 0) solve()
+        repeat(ni(), ::solve)
     } else
         solve()
     output.flush()
@@ -26,17 +25,11 @@ fun presolve() {
 }
 
 @kotlin.ExperimentalStdlibApi
-fun solve() {
+fun solve(testIdx : Int = 0) {
     
 }
 
-val Int.l
-    get() = this.toLong()
-
-var output = PrintWriter(BufferedOutputStream(if (FILE_IN_OUT) FileOutputStream(FILE_OUT) else System.out))
-
-fun pln(a : Any) = output.println(a)
-fun pln() = output.println()
+fun pln(a : Any = "") = output.println(a)
 fun pr(a : Any) = output.print(a)
 fun ipln(a : Any) {output.println(a); output.flush()}
 
@@ -44,17 +37,15 @@ fun ni() = nstr().toInt()
 fun nl() = nstr().toLong()
 fun nln() = br.readLine() ?: ""
 fun nstr() : String { while (st.hasMoreElements().not()) st = StringTokenizer(br.readLine() ?: return "", " "); return st.nextToken() }
+
 fun IntArray.read() : IntArray {for (i in indices) this[i] = ni(); return this}
 fun LongArray.read() : LongArray {for (i in indices) this[i] = nl(); return this}
 fun Array<String>.read() : Array<String> {for (i in indices) this[i] = nstr(); return this}
 
-fun Array<IntArray>.read() : Array<IntArray> {for (i in indices) for (j in this[i].indices) this[i][j] = ni(); return this}
+fun nis(delimiter: String = " ") = ArrayList(nln().split(delimiter).map {it.toInt()})
+fun nls(delimiter: String = " ") = ArrayList(nln().split(delimiter).map {it.toLong()})
+fun nstrs(delimiter: String = " ") = ArrayList(nln().split(delimiter))
 
-fun IntArray.arrToArr() : Array<Int> {val res = Array(size) {0}; for (i in indices) res[i] = this[i]; return res}
-
-fun nis() = ArrayList(nln().split(" ").map {it.toInt()})
-fun nls() = ArrayList(nln().split(" ").map {it.toLong()})
-fun nstrs() = ArrayList(nln().split(" "))
-
+var output = PrintWriter(BufferedOutputStream(if (FILE_IN_OUT) FileOutputStream(FILE_OUT) else System.out))
 val br = BufferedReader(InputStreamReader(if (FILE_IN_OUT) FileInputStream(FILE_IN) else System.`in`))
 var st = StringTokenizer("")
