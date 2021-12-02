@@ -241,7 +241,7 @@ class SolutionFast(data: ArrayList<String>) : Solution(data) {
                 val x = query.x
 
                 if (t[1].max <= x)
-                    pln(maxCoord)
+                    pln(n)
                 else {
                     val fgt = findFirstGreaterThan(1, 0, s-1, x)
 
