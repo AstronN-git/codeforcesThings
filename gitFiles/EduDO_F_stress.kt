@@ -51,18 +51,18 @@ class SolutionFast(data: ArrayList<String>) : Solution(data) {
     override fun solve(testIdx : Int) {
         val n = ni()
 
-        open class Query (var type : String)
+        open class Query ()
 
-        class IQuery (var l : Int, var r : Int, var x : Int) : Query("I")
-        class QQuery (var x : Int) : Query ("Q")
+        class IQuery (var l : Int, var r : Int, var x : Int) : Query()
+        class QQuery (var x : Int) : Query ()
 
         val queries = ArrayList<Query>()
         val cords = TreeSet<Int>()
         cords.add(0)
 
-        var str = ""
+        var str: String
 
-        var maxCoord = -1
+        var maxCord = -1
 
         do {
             str = nstr()
@@ -72,17 +72,19 @@ class SolutionFast(data: ArrayList<String>) : Solution(data) {
                     val l = ni()
                     val r = ni()
 
+                    cords.add(l-1)
                     cords.add(l)
                     cords.add(r)
+                    cords.add(r+1)
 
-                    maxCoord = max (maxCoord, r)
+                    maxCord = max (maxCord, r)
 
                     queries.add(IQuery(l, r, ni()))
                 }
             }
         } while (str != "E")
 
-        cords.add(maxCoord + 1)
+        cords.add(maxCord + 1)
 
         val CtoU = HashMap<Int, Int>()
         val UtoC = HashMap<Int, Int>()
@@ -105,154 +107,192 @@ class SolutionFast(data: ArrayList<String>) : Solution(data) {
         var s = 1
         while (s < cords.size) s = s shl 1
 
-        data class Node (var base : Int = 0, var addition : Int = Inf, var lazySet : Boolean = true, var max : Int = 0)
+        data class Node (var base : Int = 0, var addition : Int = 0, var isSetting : Boolean = false, var isAdding : Boolean = false, var max : Int = 0)
 
         val t = Array (2 * s) {Node()}
 
         fun push (v : Int, lx : Int, rx : Int) {
-            if (t[v].addition != Inf || t[v].base != 0) {
-                val mx = lx + (rx - lx) / 2
-
-                if (t[v].lazySet) {
-                    t[v*2] = Node (
-                        t[v].base,
-                        t[v].addition,
-                        true,
-                        if (t[v].addition < 0) t[v].base else t[v].base + t[v].addition * (CtoU[mx]!! - CtoU[lx]!!)
-                    )
-
-                    t[v*2+1] = Node (
-                        t[v].base + t[v].addition * (CtoU[mx+1]!! - CtoU[lx]!!),
-                        t[v].addition,
-                        true,
-                        if (t[v].addition < 0) t[v].base + t[v].addition * (CtoU[mx+1]!! - CtoU[lx]!!) else t[v].base + t[v].addition * (CtoU[rx]!! - CtoU[lx]!!)
-                    )
-                } else {
-                    t[v*2] = Node (
-                        t[v*2].base + t[v].base,
-                        t[v*2].addition,
-                        false,
-                        t[v*2].max + t[v].base
-                    )
-
-                    t[v*2+1] = Node (
-                        t[v*2+1].base + t[v].base,
-                        t[v*2+1].addition,
-                        false,
-                        t[v*2+1].max + t[v].base
-                    )
-                }
-
-                t[v].addition = Inf
-                t[v].base = 0
-            }
-        }
-
-        fun setSeq (v : Int, lx : Int, rx : Int, l : Int, r : Int, base : Int, addition : Int) {
-            if (lx > r || rx < l) return
-            if (lx >= l && rx <= r) {
-                t[v] = Node (
-                    base, addition,
-                    true,
-                    if (addition < 0) base else base + addition * (CtoU[rx]!! - CtoU[lx]!!)
-                )
-
-                return
-            }
-
-            push(v, lx, rx)
             val mx = lx + (rx - lx) / 2
 
-            if (l > mx)
-                setSeq(v*2+1, mx+1, rx, l, r, base, addition)
-            else {
-                setSeq(v*2, lx, mx, l, r, base, addition)
-                setSeq(v*2+1, mx+1, rx, l, r, base + min (CtoU[mx+1]!! - CtoU[l]!!, CtoU[mx+1]!! - CtoU[lx]!!) * addition, addition)
-            }
-
-            t[v].max = max (t[v*2].max, t[v*2+1].max)
-        }
-
-        fun addSeq (v : Int, lx : Int, rx : Int, l : Int, r : Int, base : Int) {
-            if (lx > r || rx < l) return
-            if (lx >= l && rx <= r) {
-                t[v] = Node (
-                    t[v].base + base,
+            if (t[v].isSetting) {
+                t[v*2] = Node (
+                    t[v].base,
                     t[v].addition,
-                    false,
-                    t[v].max + base
+                    isSetting = true,
+                    isAdding = false,
+                    if (t[v].addition < 0)
+                        t[v].base
+                    else
+                        t[v].base + (CtoU[mx+1]!! - CtoU[lx]!!) * t[v].addition
                 )
 
-                return
+                t[v*2+1] = Node (
+                    t[v].base + t[v].addition * (CtoU[mx+1] !! - CtoU[lx]!! ),
+                    t[v].addition,
+                    isSetting = true,
+                    isAdding = false,
+                    if (t[v].addition < 0)
+                        t[v].base + t[v].addition * (CtoU[mx+1] !! - CtoU[lx]!!)
+                    else
+                        t[v].base + t[v].addition * (CtoU[rx + 1]!! - CtoU[lx]!!)
+                )
+
+                t[v] = Node (
+                    0, 0, false, false, t[v].max
+                )
             }
 
-            push (v, lx, rx)
+            if (t[v].isAdding) {
+                t[v*2] = Node (
+                    t[v*2].base + t[v].base,
+                    t[v*2].addition + t[v].addition,
+                    t[v*2].isSetting,
+                    !t[v*2].isSetting,
+                    t[v*2].max + t[v].base
+                )
 
-            val mx = lx + (rx - lx) / 2
 
-            addSeq(v*2, lx, mx, l, r, base)
-            addSeq(v*2+1, mx+1, rx, l, r, base)
+                t[v*2+1] = Node (
+                    t[v*2+1].base + t[v].base,
+                    t[v*2+1].addition + t[v].addition,
+                    t[v*2+1].isSetting,
+                    !t[v*2+1].isSetting,
+                    t[v*2+1].max + t[v].base
+                )
 
-            t[v].max = max (t[v*2].max, t[v*2+1].max)
+                t[v] = Node (
+                    0,
+                    0,
+                    false,
+                    false,
+                    t[v].max
+                )
+            }
         }
 
-        fun get (v : Int, lx : Int, rx : Int, p : Int) : Int {
-            if (rx == lx) return t[v].max
+        fun get (v : Int, lx : Int, rx : Int, p : Int) : Node  {
+            if (lx == rx) return t[v]
             else {
-                push (v, lx, rx)
+                push(v, lx, rx)
                 val mx = lx + (rx - lx) / 2
 
                 if (p <= mx)
-                    return get (v*2, lx, mx, p)
+                    return get (v * 2, lx, mx, p)
                 else
                     return get (v*2+1, mx+1, rx, p)
             }
         }
 
-        fun findFirstGreaterThan (v : Int, lx : Int, rx : Int, x : Int) : Int {
-            if (t[v].max <= x) return -1
-            if (rx == lx) return v
+        fun setOn (v : Int, lx : Int, rx : Int, l : Int, r : Int, base : Int, addition : Int) {
+            if (lx > r || rx < l) return
+            if (lx >= l && rx <= r) {
+                t[v] = Node (
+                    base,
+                    addition,
+                    true,
+                    false,
+                    if (addition < 0) base else base + (CtoU[rx+1]!! - CtoU[lx]!!) * addition
+                )
+
+                return
+            }
 
             push (v, lx, rx)
+            val mx = lx + (rx - lx) / 2
+
+
+            if (l > mx)
+                setOn(v*2+1, mx+1, rx, l, r, base, addition)
+            else if (r <= mx)
+                setOn(v*2, lx, mx, l, r, base, addition)
+            else {
+                setOn(v*2, lx, mx, l, r, base, addition)
+                setOn(v*2+1, mx+1, rx, l, r, base + addition * (min (CtoU[mx+1]!! - CtoU[lx]!!, CtoU[mx+1]!! - CtoU[l]!!)), addition)
+            }
+            t[v].max = max (t[v*2].max, t[v*2+1].max)
+        }
+
+        fun addOn (v : Int, lx : Int, rx : Int, l : Int, r : Int, base : Int) {
+            if (lx > r || rx < l) return
+            if (lx >= l && rx <= r) {
+                if (rx != lx) {
+                    push(v, lx, rx)
+                    t[v] = Node (
+                        base,
+                        0,
+                        isSetting = false,
+                        isAdding = true,
+                        t[v].max + base
+                    )
+                } else {
+                    t[v] = Node (
+                        t[v].base + base,
+                        t[v].addition,
+                        false,
+                        false,
+                        t[v].max + base
+                    )
+                }
+
+                return
+            }
+
+            push (v, lx, rx)
+            val mx = lx + (rx - lx) / 2
+
+            addOn(v*2, lx, mx, l, r, base)
+            addOn(v*2+1, mx+1, rx, l, r, base)
+
+            t[v].max = max (t[v*2].max, t[v*2+1].max)
+        }
+
+        fun changeRainRaise (l : Int, r : Int, x : Int) {
+            val OnL = get(1, 0, s-1, l-1)
+            val OnRPre = get (1, 0, s-1, r)
+            setOn(1, 0, s-1, l, r, OnL.base + OnL.addition * (CtoU[l]!! - CtoU[l-1]!!), x)
+            val OnRPost = get (1, 0, s-1, r)
+
+            val dif = (OnRPost.base + OnRPost.addition * (CtoU[r+1]!! - CtoU[r]!!)) - (OnRPre.base + OnRPre.addition * (CtoU[r+1]!! - CtoU[r]!!))
+
+            addOn (1, 0, s-1, r+1, s-1, dif)
+        }
+
+        fun firstGreaterThan (v : Int, lx : Int, rx : Int, x : Int) : Int {
+            if (t[v].max <= x) return -1
+            if (rx == lx) return lx
+
+
+            push (v, lx, rx)
+            val mx = lx + (rx - lx) / 2
 
             if (t[v*2].max > x)
-                return findFirstGreaterThan(v*2, lx, lx + (rx - lx) / 2, x)
+                return firstGreaterThan(v*2, lx, mx, x)
             else
-                return findFirstGreaterThan(v*2+1, lx + (rx - lx) / 2 + 1, rx, x)
+                return firstGreaterThan(v*2+1, mx+1, rx, x)
         }
 
         for (query in queries) {
             if (query is IQuery) {
-                val l = query.l
-                val r = query.r
-                val x = query.x
-
-                val base = get (1, 0, s-1, l-1)
-
-                val preSetEnd = get (1, 0, s-1, r)
-
-                setSeq(1, 0, s-1, l, r, base + x, x)
-
-                val postSetEnd = get (1, 0, s-1, r)
-
-                val dif = postSetEnd - preSetEnd
-                addSeq(1, 0, s-1, r+1, cords.size-1, dif)
+                changeRainRaise(query.l, query.r, query.x)
             } else if (query is QQuery) {
                 val x = query.x
 
                 if (t[1].max <= x)
                     pln(n)
                 else {
-                    val fgt = findFirstGreaterThan(1, 0, s-1, x)
+                    val fgt = firstGreaterThan(1, 0, s-1, x)
+                    val l = get (1, 0, s-1, fgt-1)
+                    val r = get(1, 0, s-1, fgt)
 
-                    val step = t[fgt].addition
-                    val base = t[fgt-1].base
+                    if (l.addition == 0) {
+                        pln(CtoU[fgt]!!-1)
+                    } else {
+                        var t_ = CtoU[fgt-1]!!
+                        val abs = x - (l.base + l.addition * (CtoU[fgt]!! - CtoU[fgt-1]!!))
+                        t_ += abs / r.addition
 
-                    val abs = x - base
-
-                    val VtoLx = fgt - s
-
-                    this.pln(CtoU[VtoLx-1]!! + (abs / step))
+                        pln(t_)
+                    }
                 }
             }
         }
@@ -306,10 +346,10 @@ class SolutionSlow(data: ArrayList<String>) : Solution(data) {
     }
 }
 
-const val STRESS_LENGTH = 10000
-const val MAXN = 10
-const val MAXK = 5
-const val MAXH = 10
+const val STRESS_LENGTH = 100000
+const val MAXN = 32
+const val MAXK = 64
+const val MAXH = 100
 
 
 @ExperimentalStdlibApi
@@ -327,7 +367,7 @@ fun main () {
             when (Random.nextInt(2)) {
                 0 -> {
                     val l = Random.nextInt(n)+1
-                    val r = Random.nextInt(l, n)
+                    val r = Random.nextInt(l, n+1)
                     val h = Random.nextInt(MAXH) + 1
 
                     data.add("I $l $r $h")
@@ -351,19 +391,21 @@ fun main () {
 
             return
         }
+        
+        //TODO: repair slow and write data generator with negative numbers
 
-        val slow = SolutionSlow(data).callSolution()
-
-        for (j in 0 until fast.size) {
-            if (fast[j] != slow[j]) {
-                println("Error!\nData set:\n")
-                println(data.joinToString("\n"))
-                println("Your answer:\n${fast.joinToString()}")
-                println("Jury answer:\n${slow.joinToString()}")
-
-                return
-            }
-        }
+//        val slow = SolutionSlow(data).callSolution()
+//
+//        for (j in 0 until fast.size) {
+//            if (fast[j] != slow[j]) {
+//                println("Error!\nData set:\n")
+//                println(data.joinToString("\n"))
+//                println("Your answer:\n${fast.joinToString()}")
+//                println("Jury answer:\n${slow.joinToString()}")
+//
+//                return
+//            }
+//        }
     }
 
     println("SUCCESS")
